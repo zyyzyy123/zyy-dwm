@@ -43,7 +43,6 @@ static const Rule rules[] = {
 	{ "Firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
 	{ "copyq",    NULL,       NULL,       0,       		1,           -1 },
 	{ "Xfce4-appfinder",	NULL,       "应用程序查找器",       0,       		1,           -1 },
-	{ "Xfce4-terminal",		NULL,       "xtdown",       0,       		1,           -1 },
 };
 
 /* layout(s) */
@@ -72,13 +71,16 @@ static const Layout layouts[] = {
 
 /* commands */
 static const char *dmenucmd[] = { "dmenu_run", "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
-static const char *termcmd[]  = { "xfce4-terminal", NULL };			//######
+static const char *termcmd[]  = { "st", NULL };			//######
+static const char scratchpadname[] = "scratchpad";
+static const char *scratchpadcmd[] = { "st", "-t", scratchpadname, "-g", "80x20", NULL };
 static const char *xmenucmd[] = { "xfce4-appfinder", NULL };
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = xmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+	{ MODKEY,                       XK_grave,  togglescratch,  {.v = scratchpadcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstackvis,  {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstackvis,  {.i = -1 } },
