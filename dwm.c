@@ -2245,11 +2245,19 @@ togglescratch(const Arg *arg)
 
 	for (c = selmon->clients; c && !(found = c->scratchkey == ((char**)arg->v)[0][0]); c = c->next);
 	if (found) {
+		if (ISVISIBLE(c) && HIDDEN(c)){} /* combine with awesomebar.diff */
+		else {
 		c->tags = ISVISIBLE(c) ? 0 : selmon->tagset[selmon->seltags];
 		focus(NULL);
 		arrange(selmon);
+		}
 
 		if (ISVISIBLE(c)) {
+			if (HIDDEN(c)){ /* combine with awesomebar.diff */
+				if (selmon->hidsel)
+					selmon->hidsel = 0;
+				showwin(c);
+				}
 			focus(c);
 			restack(selmon);
 		}
