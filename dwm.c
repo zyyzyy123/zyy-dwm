@@ -210,6 +210,7 @@ static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void hide(const Arg *arg);
+static void hideall(const Arg *arg);
 static void hidewin(Client *c);
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
@@ -1203,6 +1204,17 @@ hide(const Arg *arg)
 {
 	hidewin(selmon->sel);
 	focus(NULL);
+	arrange(selmon);
+}
+
+void
+hideall(const Arg *arg){
+	Client *c=NULL;
+	for (c = selmon->clients; c; c = c->next) {
+		if (ISVISIBLE(c)){
+			hidewin(c);
+		}
+	}
 	arrange(selmon);
 }
 
