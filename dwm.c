@@ -82,6 +82,7 @@ enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
+enum { BtRightResize, BtLeftResize, BtDownResize, BtUpResize }; /* resize window by button */
 
 typedef union {
 	int i;
@@ -230,6 +231,7 @@ static void removesystrayicon(Client *i);
 static void resize(Client *c, int x, int y, int w, int h, int interact);
 static void resizebarwin(Monitor *m);
 static void resizeclient(Client *c, int x, int y, int w, int h);
+static void resizebt(const Arg *arg);
 static void resizemouse(const Arg *arg);
 static void resizerequest(XEvent *e);
 static void restack(Monitor *m);
@@ -1614,6 +1616,72 @@ resizeclient(Client *c, int x, int y, int w, int h)
 	XConfigureWindow(dpy, c->win, CWX|CWY|CWWidth|CWHeight|CWBorderWidth, &wc);
 	configure(c);
 	XSync(dpy, False);
+}
+
+void
+resizebt(const Arg *arg)
+{
+	int nw, nh, nbottom, nright;
+	Client *c;
+	Monitor *m;
+
+	if (!(c = selmon->sel))
+		return;
+	if (c->isfullscreen) /* no support moving fullscreen windows by mouse */
+		return;
+	if ( (!ISVISIBLE(c)) || (HIDDEN(c)) )
+		return;
+
+	restack(selmon);
+	nright = c->x + c->w + c->bw*2;
+	nbottom = c->y + c->h + c->bw*2;
+
+	switch (arg->ui) {
+	case BtRightResize:
+		nright = nright + rw;
+		break;
+	case BtLeftResize:
+		nright = nright - rw;
+		break;
+	case BtDownResize:
+		nbottom = nbottom + rh;
+		break;
+	case BtUpResize:
+		nbottom = nbottom - rh;
+		break;
+	default:
+		return;
+	}
+
+	switch (arg->ui) {
+	case BtRightResize:
+	case BtLeftResize:
+		nright = MAX(selmon->wx, nright);
+		nright = MIN(selmon->wx+selmon->ww, nright);
+		break;
+	case BtDownResize:
+	case BtUpResize:
+		nbottom = MAX(selmon->wy, nbottom);
+		nbottom = MIN(selmon->wy+selmon->wh, nbottom);
+		break;
+	default:
+		return;
+	}
+
+	nw = MAX((nright - c->x - c->bw*2), 1);
+	nh = MAX((nbottom - c->y - c->bw*2), 1);
+
+	if (!c->isfloating && selmon->lt[selmon->sellt]->arrange)
+		togglefloating(NULL);
+	if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
+		resize(c, c->x, c->y, nw, nh, 1);
+
+	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
+		sendmon(c, m);
+		selmon = m;
+		focus(NULL);
+	}
+
 }
 
 void

@@ -1,6 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
+static const int rw = 15, rh= 15;               /* resize window by quick button speed */
 static const unsigned int borderpx  = 6;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
@@ -128,6 +129,10 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_s,      showall,        {0} },
 	{ MODKEY,                       XK_e,      hide,           {0} },
 	{ MODKEY|ShiftMask,             XK_e,      hideall,        {0} },
+	{ MODKEY|ShiftMask,             XK_Right,  resizebt,       {.ui = BtRightResize } },
+	{ MODKEY|ShiftMask,             XK_Left,   resizebt,       {.ui = BtLeftResize } },
+	{ MODKEY|ShiftMask,             XK_Down,   resizebt,       {.ui = BtDownResize } },
+	{ MODKEY|ShiftMask,             XK_Up,     resizebt,       {.ui = BtUpResize } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
