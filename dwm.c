@@ -917,7 +917,7 @@ drawbar(Monitor *m)
 				}
 				drw_text(drw, x, 0, tabw, bh, lrpad / 2, c->name, 0);
 				if (c->isfloating)
-				drw_rect(drw, x + boxs, boxs, boxw, boxw, m->sel->isfixed, 0);
+					drw_rect(drw, x + boxs, boxs, boxw, boxw, 1, 0);
 				x += tabw;
 			}
 		} else {
@@ -1053,7 +1053,7 @@ focusstack(int inc, int hid)
 		focus(c);
 		restack(selmon);
 		if (HIDDEN(c)) {
-			showwin(c);
+//			showwin(c);
 			c->mon->hidsel = 1;
 		}
 	}
