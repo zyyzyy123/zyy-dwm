@@ -82,6 +82,7 @@ enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
 enum { WMProtocols, WMDelete, WMState, WMTakeFocus, WMLast }; /* default atoms */
 enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
+enum { BtUpWin, BtDownWin, BtLeftWin, BtRightWin}; /* Window move by quick button*/
 
 typedef union {
 	int i;
@@ -220,6 +221,7 @@ static void mappingnotify(XEvent *e);
 static void maprequest(XEvent *e);
 static void monocle(Monitor *m);
 static void motionnotify(XEvent *e);
+static void movebt(const Arg *arg);
 static void movemouse(const Arg *arg);
 static Client *nexttiled(Client *c);
 static void pop(Client *c);
@@ -1417,6 +1419,93 @@ motionnotify(XEvent *e)
 		focus(NULL);
 	}
 	mon = m;
+}
+
+void
+movebt(const Arg *arg)
+{
+	int ocx, ocy, nx, ny;
+	Monitor *m;
+	Client *c;
+	if( !(c=selmon->sel) )
+		return;
+	if (c->isfullscreen) /* no support moving fullscreen windows by mouse */
+		return;
+	if( (!ISVISIBLE(c)) || (HIDDEN(c)) )
+		return;
+	restack(selmon);
+	nx=ocx=c->x;
+	ny=ocy=c->y;
+	
+	/* compute x or y*/
+	switch ( arg->ui ) {
+	case BtRightWin:
+		nx = ocx + ex;
+		break;
+	case BtLeftWin:
+		nx = ocx - ex;
+		break;
+	case BtDownWin:
+		ny = ocy + ey;
+		break;
+	case BtUpWin:
+		ny = ocy - ey;
+		break;
+	default:
+		return;
+	}
+
+	switch ( arg->ui ) {
+	case BtRightWin:
+	case BtLeftWin:
+	/* try justfy x */
+		if (abs(selmon->wx - nx) < snap)
+			nx = selmon->wx;
+		else if (abs((selmon->wx + selmon->ww) - (nx + WIDTH(c))) < snap)
+			nx = selmon->wx + selmon->ww - WIDTH(c);		
+		break;
+	case BtDownWin:
+	case BtUpWin:
+	/* try justfy y */
+		if (abs(selmon->wy - ny) < snap)
+			ny = selmon->wy;
+		else if (abs((selmon->wy + selmon->wh) - (ny + HEIGHT(c))) < snap)
+			ny = selmon->wy + selmon->wh - HEIGHT(c);
+		break;
+	default:
+		return;
+	}
+	
+	/* finaly decide x or y */
+	switch ( arg->ui ) {
+	case BtRightWin:
+		nx = nx > ocx ? nx : (ocx + ex);
+		break;
+	case BtLeftWin:
+		nx = nx < ocx ? nx : (ocx - ex);
+		break;
+	case BtDownWin:
+		ny = ny > ocy ? ny : (ocy + ey);
+		break;
+	case BtUpWin:
+		ny = ny < ocy ? ny : (ocy - ey);
+		break;
+	default:
+		return;
+	}
+
+	/* toggle floating and move window */
+	if (!c->isfloating && selmon->lt[selmon->sellt]->arrange)
+		togglefloating(NULL);
+	if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
+		resize(c, nx, ny, c->w, c->h, 1);
+
+	/* check window monitor */
+	if ((m = recttomon(c->x, c->y, c->w, c->h)) != selmon) {
+		sendmon(c, m);
+		selmon = m;
+		focus(NULL);
+	}
 }
 
 void
