@@ -1,8 +1,8 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const int ex=15, ey=15;					/* speed for move window by button*/
-static const int rw = 15, rh= 15;               /* resize window by quick button speed */
+static const int ex=32, ey=32;					/* speed for move window by button*/
+static const int rw = 32, rh= 32;               /* resize window by quick button speed */
 static const unsigned int borderpx  = 6;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
