@@ -2,6 +2,7 @@
 
 /* appearance */
 static const int ex=15, ey=15;					/* speed for move window by button*/
+static const int rw = 15, rh= 15;               /* resize window by quick button speed */
 static const unsigned int borderpx  = 6;        /* border pixel of windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int gappih    = 10;       /* horiz inner gap between windows */
@@ -133,6 +134,10 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_Left,   movebt,         {.ui = BtLeftWin } },
 	{ MODKEY,                       XK_Down,   movebt,         {.ui = BtDownWin } },
 	{ MODKEY,                       XK_Up,     movebt,         {.ui = BtUpWin   } },
+	{ MODKEY|ShiftMask,             XK_Right,  resizebt,       {.ui = BtRightResize } },
+	{ MODKEY|ShiftMask,             XK_Left,   resizebt,       {.ui = BtLeftResize } },
+	{ MODKEY|ShiftMask,             XK_Down,   resizebt,       {.ui = BtDownResize } },
+	{ MODKEY|ShiftMask,             XK_Up,     resizebt,       {.ui = BtUpResize } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
