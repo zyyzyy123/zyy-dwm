@@ -2470,6 +2470,8 @@ togglewin(const Arg *arg)
 */
 	if (c != selmon->sel){
 		focus(c);
+		if (!HIDDEN(c))
+			restack(selmon);
 		return;
 	}
 	if (HIDDEN(c)){
