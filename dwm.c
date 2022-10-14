@@ -299,6 +299,8 @@ static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
+/* more function */
+#include "gaplessgrid.h"
 
 /* variables */
 static Systray *systray = NULL;
@@ -2996,6 +2998,9 @@ zoom(const Arg *arg)
 		return;
 	pop(c);
 }
+
+/* more function */
+#include "gaplessgrid.c"
 
 int
 main(int argc, char *argv[])
