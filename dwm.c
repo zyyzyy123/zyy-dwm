@@ -1396,6 +1396,8 @@ movebt(const Arg *arg)
 		return;
 	if (c->isfullscreen) /* no support moving fullscreen windows by mouse */
 		return;
+	if (!(c->isfloating) && selmon->lt[selmon->sellt]->arrange) /* float window or float layout permmit */
+		return;
 	if( (!ISVISIBLE(c)) || (HIDDEN(c)) )
 		return;
 	restack(selmon);
@@ -1459,9 +1461,6 @@ movebt(const Arg *arg)
 		return;
 	}
 
-	/* toggle floating and move window */
-	if (!c->isfloating && selmon->lt[selmon->sellt]->arrange)
-		togglefloating(NULL);
 	if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
 		resize(c, nx, ny, c->w, c->h, 1);
 
@@ -1681,6 +1680,8 @@ resizebt(const Arg *arg)
 		return;
 	if (c->isfullscreen) /* no support moving fullscreen windows by mouse */
 		return;
+	if (!(c->isfloating) && selmon->lt[selmon->sellt]->arrange) /* float window or float layout permmit */
+		return;
 	if ( (!ISVISIBLE(c)) || (HIDDEN(c)) )
 		return;
 
@@ -1723,8 +1724,6 @@ resizebt(const Arg *arg)
 	nw = MAX((nright - c->x - c->bw*2), 1);
 	nh = MAX((nbottom - c->y - c->bw*2), 1);
 
-	if (!c->isfloating && selmon->lt[selmon->sellt]->arrange)
-		togglefloating(NULL);
 	if (!selmon->lt[selmon->sellt]->arrange || c->isfloating)
 		resize(c, c->x, c->y, nw, nh, 1);
 
