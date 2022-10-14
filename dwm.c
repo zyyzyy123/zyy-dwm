@@ -968,12 +968,14 @@ focus(Client *c)
 	if (selmon->sel && selmon->sel != c) {
 		unfocus(selmon->sel, 0);
 
+		/* 这写代码有些不适合我的使用习惯
 		if (selmon->hidsel) {
 			hidewin(selmon->sel);
 			if (c)
 				arrange(c->mon);
 			selmon->hidsel = 0;
 		}
+		*/
 	}
 	if (c) {
 		if (c->mon != selmon)
