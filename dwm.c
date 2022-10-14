@@ -275,6 +275,7 @@ static void togglescratch(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void togglewin(const Arg *arg);
+static void togglewinbt(const Arg *arg);
 static void unfocus(Client *c, int setfocus);
 static void unmanage(Client *c, int destroyed);
 static void unmapnotify(XEvent *e);
@@ -923,6 +924,8 @@ drawbar(Monitor *m)
 				drw_text(drw, x, 0, tabw, bh, lrpad / 2, c->name, 0);
 				if (c->isfloating)
 					drw_rect(drw, x + boxs, boxs, boxw, boxw, 1, 0);
+				if (HIDDEN(c))
+					drw_rect(drw, x + boxs, boxs+boxw*2, boxw, boxw, 0, 0);
 				x += tabw;
 			}
 		} else {
@@ -2451,7 +2454,7 @@ void
 togglewin(const Arg *arg)
 {
 	Client *c = (Client*)arg->v;
-
+/*
 	if (c == selmon->sel) {
 		hidewin(c);
 		focus(NULL);
@@ -2462,8 +2465,36 @@ togglewin(const Arg *arg)
 		focus(c);
 		restack(selmon);
 	}
+*/
+	if (c != selmon->sel){
+		focus(c);
+		return;
+	}
+	if (HIDDEN(c)){
+		showwin(c);
+		restack(selmon);
+	} else {
+		hidewin(c);
+		arrange(c->mon);
+	}
+	focus(c);
 }
 
+void
+togglewinbt(const Arg *arg){
+	
+	Client *c = selmon->sel;
+	if (!c)
+		return;
+	if (HIDDEN(c)){
+		showwin(c);
+		restack(selmon);
+	} else {
+		hidewin(c);
+		arrange(c->mon);
+	}
+	focus(c);
+}
 void
 unfocus(Client *c, int setfocus)
 {
