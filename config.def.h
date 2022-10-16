@@ -45,9 +45,13 @@ static const Rule rules[] = {
 		{ "Gimp",		NULL,       NULL,       0,            1,           -1,		0},
 		{ "Firefox",	NULL,       NULL,       1 << 8,       0,           -1,		0},
 		{ "copyq",		NULL,       NULL,       0,			  1,           -1,		0},
-{ "Xfce4-appfinder",    NULL,       NULL,       0,       	  1,           -1,		0},
+		{ "Xfce4-appfinder",\
+						NULL,       NULL,       0,       	  1,           -1,		0},
 		{ "Panda",		NULL,       NULL,       0,       	  1,           -1,		0},
-		{ NULL,			NULL,   "scratchpad",   0,       	  1,           -1,		's'}
+		{ NULL,			NULL,   "scratchpad",   0,       	  1,           -1,		's'},
+		{ "flameshot",	NULL,       NULL,       0,       	  1,           -1,		0},
+		{ "SimpleScreenRecorder",\
+                        NULL,       NULL,       0,       	  1,           -1,		0},
 };
 
 /* layout(s) */
@@ -58,8 +62,8 @@ static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen win
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[t]",      tile },    /* first entry is default */
-	{ "[M]",      monocle },
+	{ "[M]",      monocle },/* first entry is default */
+	{ "[t]",      tile },
 	{ "[f]",      NULL },    /* no layout function means floating behavior */
 	{ "[g]",      gaplessgrid },
 };
@@ -81,14 +85,21 @@ static const char *termcmd[]  = { "st", NULL };			//######
 static const char *xmenucmd[] = { "xfce4-appfinder", NULL };
 /*First arg only serves to match against key in rules*/
 static const char *scratchpadcmd[] = {"s", "st", "-t", "scratchpad", NULL}; 
-
+/* zyy add*/
+static const char *copyqcmd[] = { "copyq", "toggle", NULL };
+static const char *recordcmd[]= { "simplescreenrecorder", "--logfile", NULL };
+static const char *shootercmd[]={ "flameshot", "launcher", NULL };
 
 
 static const Key keys[] = {
+	/* apps shortcuts  */
+	{ MODKEY,                       XK_v,      spawn,          {.v = copyqcmd } },
+	{ MODKEY,                       XK_Print,  spawn,          {.v = recordcmd } },
+	{ 0,                            XK_Print,  spawn,          {.v = shootercmd } },
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = xmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_grave,  togglescratch,  {.v = scratchpadcmd } },
+	{ MODKEY,                       XK_Tab,    togglescratch,  {.v = scratchpadcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstackvis,  {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstackvis,  {.i = -1 } },
@@ -117,9 +128,9 @@ static const Key keys[] = {
 	{ MODKEY,                       XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[0]} },
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_g,      setlayout,      {.v = &layouts[3]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {0} },
