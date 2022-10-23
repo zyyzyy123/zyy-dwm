@@ -18,7 +18,7 @@ static const int showsystray        = 1;     /* 0 means no systray */
 static const int showbar            = 1;     /* 0 means no bar */
 static const int topbar             = 1;     /* 0 means bottom bar */
 static const int focusonwheel       = 0;
-static const char *fonts[]          = { "monospace:size=20" };
+static const char *fonts[]          = { "Source Code Pro:size=20" };
 static const char dmenufont[]       = "monospace:size=10";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
@@ -48,10 +48,11 @@ static const Rule rules[] = {
 		{ "Xfce4-appfinder",\
 						NULL,       NULL,       0,       	  1,           -1,		0},
 		{ "Panda",		NULL,       NULL,       0,       	  1,           -1,		0},
-		{ NULL,			NULL,   "scratchpad",   0,       	  1,           -1,		's'},
+		{ NULL,			NULL,   "scratchpad",   0,       	  1,           -1,	  's'},
 		{ "flameshot",	NULL,       NULL,       0,       	  1,           -1,		0},
 		{ "SimpleScreenRecorder",\
                         NULL,       NULL,       0,       	  1,           -1,		0},
+		{ NULL,	        NULL,    "alsamixer",   0,       	  1,           -1,	  'a'},
 };
 
 /* layout(s) */
@@ -89,13 +90,19 @@ static const char *scratchpadcmd[] = {"s", "st", "-t", "scratchpad", NULL};
 static const char *copyqcmd[] = { "copyq", "toggle", NULL };
 static const char *recordcmd[]= { "simplescreenrecorder", "--logfile", NULL };
 static const char *shootercmd[]={ "flameshot", "launcher", NULL };
-
+static const char *lightdown[]= { "xbacklight", "-dec", "2", NULL };
+static const char *lightup[] =  { "xbacklight", "-inc", "2", NULL };
+static const char *volumecmd[]= { "a", "st", "-g", "60x20", "-e", "alsamixer", NULL };
 
 static const Key keys[] = {
 	/* apps shortcuts  */
+	{ MODKEY|ShiftMask,             XK_v,      togglescratch,  {.v = volumecmd } },
 	{ MODKEY,                       XK_v,      spawn,          {.v = copyqcmd } },
 	{ MODKEY,                       XK_Print,  spawn,          {.v = recordcmd } },
 	{ 0,                            XK_Print,  spawn,          {.v = shootercmd } },
+	/* special key */
+	{ 0,            XF86XK_MonBrightnessDown,  spawn,          {.v = lightdown } },
+	{ 0,            XF86XK_MonBrightnessUp,    spawn,          {.v = lightup } },
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = xmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
