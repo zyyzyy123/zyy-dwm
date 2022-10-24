@@ -85,6 +85,7 @@ enum { ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
        ClkClientWin, ClkRootWin, ClkLast }; /* clicks */
 enum { BtUpWin, BtDownWin, BtLeftWin, BtRightWin}; /* Window move by quick button*/
 enum { BtRightResize, BtLeftResize, BtDownResize, BtUpResize }; /* resize window by button */
+enum { Show, Toggle }; /* scratch mode */
 
 typedef union {
 	int i;
@@ -112,7 +113,7 @@ struct Client {
 	int bw, oldbw;
 	unsigned int tags;
 	int isfixed, isfloating, isurgent, neverfocus, oldstate, isfullscreen;
-	char scratchkey;
+	int scratchkey;
 	Client *next;
 	Client *snext;
 	Monitor *mon;
@@ -166,7 +167,7 @@ typedef struct {
 	unsigned int tags;
 	int isfloating;
 	int monitor;
-	const char scratchkey;
+	const int scratchkey;
 } Rule;
 
 typedef struct Systray   Systray;
@@ -174,6 +175,12 @@ struct Systray {
 	Window win;
 	Client *icons;
 };
+
+typedef struct {
+	int scratchkey;
+	int scratchmod;
+	const void *v;
+} ScratchArg;
 
 /* function declarations */
 static void applyrules(Client *c);
@@ -265,7 +272,6 @@ static void sigchld(int unused);
 static void sighup(int unused);
 static void sigterm(int unused);
 static void spawn(const Arg *arg);
-static void spawnscratch(const Arg *arg);
 static Monitor *systraytomon(Monitor *m);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
@@ -2297,19 +2303,6 @@ spawn(const Arg *arg)
 	}
 }
 
-void spawnscratch(const Arg *arg)
-{
-	if (fork() == 0) {
-		if (dpy)
-			close(ConnectionNumber(dpy));
-		setsid();
-		execvp(((char **)arg->v)[1], ((char **)arg->v)+1);
-		fprintf(stderr, "dwm: execvp %s", ((char **)arg->v)[1]);
-		perror(" failed");
-		exit(EXIT_SUCCESS);
-	}
-}
-
 void
 tag(const Arg *arg)
 {
@@ -2401,28 +2394,46 @@ togglescratch(const Arg *arg)
 {
 	Client *c;
 	unsigned int found = 0;
+	ScratchArg *Sarg=(ScratchArg *)(arg->v);
 
-	for (c = selmon->clients; c && !(found = c->scratchkey == ((char**)arg->v)[0][0]); c = c->next);
+	for (c = selmon->clients; c && !(found = c->scratchkey == Sarg->scratchkey); c = c->next);
 	if (found) {
-		if (ISVISIBLE(c) && HIDDEN(c)){} /* combine with awesomebar.diff */
-		else {
-		c->tags = ISVISIBLE(c) ? 0 : selmon->tagset[selmon->seltags];
-		focus(NULL);
-		arrange(selmon);
-		}
+		switch (Sarg->scratchmod) {
+		case Toggle:
+			if (ISVISIBLE(c) && HIDDEN(c)){} /* combine with awesomebar.diff */
+			else {
+			c->tags = ISVISIBLE(c) ? 0 : selmon->tagset[selmon->seltags];
+			focus(NULL);
+			arrange(selmon);
+			}
 
-		if (ISVISIBLE(c)) {
-			if (HIDDEN(c)){ /* combine with awesomebar.diff */
-				if (selmon->hidsel)
-					selmon->hidsel = 0;
+			if (ISVISIBLE(c)) {
+				if (HIDDEN(c)){ /* combine with awesomebar.diff */
+					if (selmon->hidsel)
+						selmon->hidsel = 0;
+					showwin(c);
+					}
+				focus(c);
+				restack(selmon);
+			}
+		break;
+		case Show:
+			if(ISVISIBLE(c)){}
+			else{
+				c->tags = selmon->tagset[selmon->seltags];
+				arrange(selmon);
+			}
+			if(HIDDEN(c)){
 				showwin(c);
-				}
+			}
 			focus(c);
 			restack(selmon);
+		break;
 		}
-
 	} else{
-		spawnscratch(arg);
+		Arg arg_temp;
+		arg_temp.v=Sarg->v;
+		spawn(&arg_temp);
 	}
 }
 

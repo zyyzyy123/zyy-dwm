@@ -48,11 +48,11 @@ static const Rule rules[] = {
 		{ "Xfce4-appfinder",\
 						NULL,       NULL,       0,       	  1,           -1,		0},
 		{ "Panda",		NULL,       NULL,       0,       	  1,           -1,		0},
-		{ NULL,			NULL,   "scratchpad",   0,       	  1,           -1,	  's'},
 		{ "flameshot",	NULL,       NULL,       0,       	  1,           -1,		0},
 		{ "SimpleScreenRecorder",\
                         NULL,       NULL,       0,       	  1,           -1,		0},
-		{ NULL,	        NULL,    "alsamixer",   0,       	  1,           -1,	  'a'},
+		{ NULL,	        NULL,    "alsamixer",   0,       	  1,           -1,	    1},
+		{ NULL,			NULL,   "scratchpad",   0,       	  1,           -1,	    2},
 };
 
 /* layout(s) */
@@ -85,18 +85,20 @@ static const char *dmenucmd[] = { "dmenu_run", "-fn", dmenufont, "-nb", col_gray
 static const char *termcmd[]  = { "st", NULL };			//######
 static const char *xmenucmd[] = { "xfce4-appfinder", NULL };
 /*First arg only serves to match against key in rules*/
-static const char *scratchpadcmd[] = {"s", "st", "-t", "scratchpad", NULL}; 
+static const char *scratchpadcmd[] = {"st", "-t", "scratchpad", NULL}; 
 /* zyy add*/
 static const char *copyqcmd[] = { "copyq", "toggle", NULL };
 static const char *recordcmd[]= { "simplescreenrecorder", "--logfile", NULL };
 static const char *shootercmd[]={ "flameshot", "launcher", NULL };
 static const char *lightdown[]= { "xbacklight", "-dec", "2", NULL };
 static const char *lightup[] =  { "xbacklight", "-inc", "2", NULL };
-static const char *volumecmd[]= { "a", "st", "-g", "60x20", "-e", "alsamixer", NULL };
+static const char *volumecmd[]= { "st", "-g", "60x20", "-e", "alsamixer", NULL };
+static ScratchArg volume_s  =   { .scratchkey=1, .scratchmod=Show, .v=volumecmd};
+static ScratchArg scratchpad_s= { .scratchkey=2, .scratchmod=Toggle, .v=scratchpadcmd};
 
 static const Key keys[] = {
 	/* apps shortcuts  */
-	{ MODKEY|ShiftMask,             XK_v,      togglescratch,  {.v = volumecmd } },
+	{ MODKEY|ShiftMask,             XK_v,      togglescratch,  {.v = &volume_s } },
 	{ MODKEY,                       XK_v,      spawn,          {.v = copyqcmd } },
 	{ MODKEY,                       XK_Print,  spawn,          {.v = recordcmd } },
 	{ 0,                            XK_Print,  spawn,          {.v = shootercmd } },
@@ -106,7 +108,7 @@ static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = xmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_Tab,    togglescratch,  {.v = scratchpadcmd } },
+	{ MODKEY,                       XK_Tab,    togglescratch,  {.v = &scratchpad_s } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstackvis,  {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstackvis,  {.i = -1 } },
